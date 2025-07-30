@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useState } from 'react';
 import {
     SafeAreaView,
@@ -9,9 +10,11 @@ import {
     FlatList,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 const HomeScreen = ({ navigation }) => {
     const [users, setUsers] = useState([]);
+    const isFocused = useIsFocused();
 
     useEffect(() => {
         const loadUsers = async () => {
@@ -24,17 +27,30 @@ const HomeScreen = ({ navigation }) => {
             }
         };
 
-        loadUsers();
-    }, []);
+        if (isFocused) {
+            loadUsers();
+        }
+    }, [isFocused]);
 
     const handleLogout = () => {
         navigation.replace('Login');
     };
 
+    const handleDelete = async (index) => {
+        try {
+            const updatedUsers = [...users];
+            updatedUsers.splice(index, 1);
+            await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
+            setUsers(updatedUsers);
+        } catch (error) {
+            console.error('Error deleting user:', error);
+        }
+    };
+
     const renderItem = ({ item, index }) => (
         <View style={styles.userCard}>
             <TouchableOpacity
-                onPress={() => navigation.navigate('UserDetail', { user: item })}
+                onPress={() => navigation.navigate('UserDetail', { user: item, index })}
             >
                 <Text style={styles.nameText}>{item.name}</Text>
                 <Text style={styles.emailText}>{item.email}</Text>
@@ -47,16 +63,6 @@ const HomeScreen = ({ navigation }) => {
             </TouchableOpacity>
         </View>
     );
-    const handleDelete = async (index) => {
-        try {
-            const updatedUsers = [...users];
-            updatedUsers.splice(index, 1); // Remove user at given index
-            await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
-            setUsers(updatedUsers); // Refresh UI
-        } catch (error) {
-            console.error('Error deleting user:', error);
-        }
-    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -132,12 +138,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         borderRadius: 6,
     },
-
     deleteText: {
         color: '#fff',
         fontWeight: '600',
     },
-
     nameText: {
         fontSize: 18,
         fontWeight: '700',

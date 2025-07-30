@@ -3,16 +3,16 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LoginScreen from './LoginSignupFlow/LoginScreen';
-import Signup from './LoginSignupFlow/Signup';
-import OTPVerificationScreen from './LoginSignupFlow/OTPVerificationScreen';
-import NameScreen from './LoginSignupFlow/NameScreen';
-import BirthdayScreen from './LoginSignupFlow/BirthdayScreen';
-import GenderScreen from './LoginSignupFlow/GenderScreen';
-import OnboardingScreen from './LoginSignupFlow/OnboardingScreen';
-import SplashScreen from './LoginSignupFlow/SplashScreen';
-import HomeScreen from './LoginSignupFlow/HomeScreen';
-import UserDetailScreen from './LoginSignupFlow/UserDetailScreen';
+import LoginScreen from './Screens/LoginSignup/LoginScreen';
+import Signup from './Screens/LoginSignup/Signup';
+import OTPVerificationScreen from './Screens/ForgotPassword/OTPVerificationScreen';
+import NameScreen from './Screens/Onbording/NameScreen';
+import BirthdayScreen from './Screens/Onbording/BirthdayScreen';
+import GenderScreen from './Screens/Onbording/GenderScreen';
+import OnboardingScreen from './Screens/Wallkthrough/OnboardingScreen';
+import SplashScreen from './Screens/Splash/SplashScreen';
+import HomeScreen from './Screens/Dashboard/HomeScreen';
+import UserDetailScreen from './Screens/Dashboard/UserDetailScreen';
 
 
 const Stack = createNativeStackNavigator();

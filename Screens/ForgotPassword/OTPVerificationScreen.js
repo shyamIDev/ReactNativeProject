@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
     SafeAreaView,
@@ -14,24 +13,50 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ForgotPasswordScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
+    const [otp, setOtp] = useState('');
+    const [enteredOtp, setEnteredOtp] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [userExists, setUserExists] = useState(false);
+    const [step, setStep] = useState('email');
+
+    const generateOTP = () => {
+        return Math.floor(1000 + Math.random() * 9000).toString();
+    };
 
     const handleCheckEmail = async () => {
-        if (email === '') {
+        if (email.trim() === '') {
             Alert.alert('Error', 'Please enter your email');
             return;
         }
 
         const storedUsers = await AsyncStorage.getItem('users');
         const users = storedUsers ? JSON.parse(storedUsers) : [];
-        const matchedUser = users.find(user => user.email === email);
+        const matchedUser = users.find(user => user.email === email.toLowerCase());
 
         if (matchedUser) {
-            setUserExists(true);
+            const otpCode = generateOTP();
+            setOtp(otpCode);
+            await AsyncStorage.setItem('reset_otp', JSON.stringify({ email, otp: otpCode }));
+            Alert.alert('OTP Sent', `Use OTP: ${otpCode}`);
+            setStep('otp');
         } else {
             Alert.alert('Error', 'Email not found');
+        }
+    };
+
+    const handleVerifyOtp = async () => {
+        const storedOtpData = await AsyncStorage.getItem('reset_otp');
+        if (!storedOtpData) {
+            Alert.alert('Error', 'OTP session expired. Try again.');
+            setStep('email');
+            return;
+        }
+
+        const { email: storedEmail, otp: storedOtp } = JSON.parse(storedOtpData);
+        if (email.toLowerCase() === storedEmail.toLowerCase() && enteredOtp === storedOtp) {
+            setStep('password');
+        } else {
+            Alert.alert('Error', 'Invalid OTP');
         }
     };
 
@@ -51,10 +76,12 @@ const ForgotPasswordScreen = ({ navigation }) => {
             let users = storedUsers ? JSON.parse(storedUsers) : [];
 
             users = users.map(user =>
-                user.email === email ? { ...user, password: newPassword } : user
+                user.email === email.toLowerCase() ? { ...user, password: newPassword } : user
             );
 
             await AsyncStorage.setItem('users', JSON.stringify(users));
+            await AsyncStorage.removeItem('reset_otp');
+
             Alert.alert('Success', 'Password updated successfully', [
                 { text: 'OK', onPress: () => navigation.goBack() },
             ]);
@@ -69,7 +96,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
             <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.title}>Forgot Password</Text>
 
-                {!userExists ? (
+                {step === 'email' && (
                     <>
                         <Text style={styles.subtitle}>Enter your registered email</Text>
                         <TextInput
@@ -77,14 +104,35 @@ const ForgotPasswordScreen = ({ navigation }) => {
                             placeholderTextColor="grey"
                             style={[styles.input, styles.shadow]}
                             value={email}
-                            onChangeText={setEmail}
+                            onChangeText={text => setEmail(text.toLowerCase())}
                             keyboardType="email-address"
+                            autoCapitalize="none"
                         />
                         <TouchableOpacity style={[styles.button, styles.shadow]} onPress={handleCheckEmail}>
-                            <Text style={styles.buttonText}>Check Email</Text>
+                            <Text style={styles.buttonText}>Send OTP</Text>
                         </TouchableOpacity>
                     </>
-                ) : (
+                )}
+
+                {step === 'otp' && (
+                    <>
+                        <Text style={styles.subtitle}>Enter the OTP sent to your email</Text>
+                        <TextInput
+                            placeholder="Enter OTP"
+                            placeholderTextColor="grey"
+                            style={[styles.input, styles.shadow]}
+                            keyboardType="numeric"
+                            value={enteredOtp}
+                            onChangeText={setEnteredOtp}
+                            maxLength={6}
+                        />
+                        <TouchableOpacity style={[styles.button, styles.shadow]} onPress={handleVerifyOtp}>
+                            <Text style={styles.buttonText}>Verify OTP</Text>
+                        </TouchableOpacity>
+                    </>
+                )}
+
+                {step === 'password' && (
                     <>
                         <Text style={styles.subtitle}>Update your password</Text>
                         <TextInput
