@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from 'react';
 import {
     SafeAreaView,
@@ -66,20 +64,18 @@ const HomeScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-                    <Text style={styles.logoutText}>Logout</Text>
-                </TouchableOpacity>
-            </View>
 
             <View style={styles.content}>
-                <Text style={styles.title}>Registered Users</Text>
-                <FlatList
-                    data={users}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={renderItem}
-                    contentContainerStyle={{ paddingVertical: 10 }}
-                />
+                {users.length === 0 ? (
+                    <Text style={styles.emptyText}>No users found.</Text>
+                ) : (
+                    <FlatList
+                        data={users}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={renderItem}
+                        contentContainerStyle={{ paddingVertical: 10 }}
+                    />
+                )}
             </View>
         </SafeAreaView>
     );
@@ -95,17 +91,27 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        padding: 16,
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingTop: 16,
     },
     logoutButton: {
-        backgroundColor: 'red',
-        paddingVertical: 8,
-        paddingHorizontal: 14,
-        borderRadius: 6,
+        backgroundColor: '#f2f2f2',
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
     },
     logoutText: {
-        color: '#ffffff',
+        color: '#333',
         fontWeight: '600',
+        fontSize: 14,
     },
     content: {
         flex: 1,
@@ -116,6 +122,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 20,
+        color: '#333',
     },
     userCard: {
         backgroundColor: '#ffffff',
@@ -151,5 +158,11 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: '#666666',
         marginTop: 4,
+    },
+    emptyText: {
+        textAlign: 'center',
+        fontSize: 16,
+        color: '#999',
+        marginTop: 40,
     },
 });

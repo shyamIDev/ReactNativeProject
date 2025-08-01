@@ -3,6 +3,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import LoginScreen from './Screens/LoginSignup/LoginScreen';
 import Signup from './Screens/LoginSignup/Signup';
 import OTPVerificationScreen from './Screens/ForgotPassword/OTPVerificationScreen';
@@ -11,61 +12,76 @@ import BirthdayScreen from './Screens/Onbording/BirthdayScreen';
 import GenderScreen from './Screens/Onbording/GenderScreen';
 import OnboardingScreen from './Screens/Wallkthrough/OnboardingScreen';
 import SplashScreen from './Screens/Splash/SplashScreen';
-import HomeScreen from './Screens/Dashboard/HomeScreen';
 import UserDetailScreen from './Screens/Dashboard/UserDetailScreen';
 
+import MainTabs from './Screens/MainTabs';
+import PostDetailScreen from './Screens/API/PostDetailScreen';
+import MealDetail from './Screens/API/MealDetail';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SplashScreen">
+      <Stack.Navigator
+        initialRouteName="SplashScreen"
+        screenOptions={{ headerShown: false }}>
+
         <Stack.Screen
-          name='SplashScreen'
+          name="SplashScreen"
           component={SplashScreen}
         />
         <Stack.Screen
           name="OnboardingScreen"
           component={OnboardingScreen}
-
         />
         <Stack.Screen
           name="Login"
           component={LoginScreen}
-          options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="SignUp"
-          component={Signup}
-          options={{ headerShown: false }}
+          name="SignUp" component={Signup}
         />
         <Stack.Screen
           name="OTPVerification"
           component={OTPVerificationScreen}
+          options={{ headerShown: true }}
         />
         <Stack.Screen
           name="NameScreen"
           component={NameScreen}
+           options={{ headerShown: true }}
         />
         <Stack.Screen
           name="BirthdayScreen"
           component={BirthdayScreen}
+          options={{ headerShown: true }}
         />
         <Stack.Screen
           name="GenderScreen"
           component={GenderScreen}
+           options={{ headerShown: true }}
         />
         <Stack.Screen
-          name='HomeScreen'
-          component={HomeScreen}
-          options={{ headerShown: false }}
+          name="HomeScreen"
+          component={MainTabs}
         />
+
         <Stack.Screen
           name="UserDetail"
           component={UserDetailScreen}
+          options={{ headerShown: true, title: 'User Details' }}
         />
-
+        <Stack.Screen
+          name="PostDetail"
+          component={PostDetailScreen}
+          options={{ headerShown: true }}
+        />
+           <Stack.Screen
+            name="MealDetail"
+             component={MealDetail}
+             options={{ headerShown: true }}
+              />
       </Stack.Navigator>
     </NavigationContainer>
   );
