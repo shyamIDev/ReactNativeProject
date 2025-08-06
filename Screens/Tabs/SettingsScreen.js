@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import {
     View,
@@ -26,7 +27,10 @@ const SettingsScreen = ({ navigation }) => {
             handleLogout();
         } else if (item.key === 'version') {
             Alert.alert('App Version', 'v1.0.0');
-        } else {
+        } else if (item.key === 'Profile') {
+            navigation.navigate('Profile');
+        }
+        else {
             Alert.alert(item.title, `Tapped on "${item.title}"`);
         }
     };
@@ -96,13 +100,14 @@ const SettingsScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-         
+
             <SectionList
                 sections={sections}
                 keyExtractor={(item) => item.key}
                 renderItem={renderItem}
                 renderSectionHeader={renderSectionHeader}
                 contentContainerStyle={styles.list}
+
             />
         </View>
     );

@@ -1,10 +1,12 @@
+
+
 import React from 'react';
 import { Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from './Dashboard/HomeScreen';
-import APIScreen from './API/APIScreen';
-import MealsScreen from './API/MealsScreen';
-import SettingsScreen from './Dashboard/SettingsScreen';
+import HomeScreen from './Tabs/HomeScreen';
+import APIScreen from '../API/APIScreen';
+import MealsScreen from '../API/MealsScreen';
+import SettingsScreen from './Tabs/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
 

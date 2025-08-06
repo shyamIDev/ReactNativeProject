@@ -199,7 +199,7 @@ const Signup = ({ navigation }) => {
                             {[
                                 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png',
                                 'https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png',
-                                'https://e7.pngegg.com/pngimages/708/311/png-clipart-twitter-twitter-thumbnail.png',
+                                'https://cdn.jim-nielsen.com/ios/512/twitter-2013-10-08.png?rf=1024',
                             ].map((uri, index) => (
                                 <View key={index} style={[styles.iconWrapper, styles.shadow]}>
                                     <Image style={styles.socialIcon} source={{ uri }} />

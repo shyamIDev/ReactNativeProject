@@ -12,11 +12,12 @@ import BirthdayScreen from './Screens/Onbording/BirthdayScreen';
 import GenderScreen from './Screens/Onbording/GenderScreen';
 import OnboardingScreen from './Screens/Wallkthrough/OnboardingScreen';
 import SplashScreen from './Screens/Splash/SplashScreen';
-import UserDetailScreen from './Screens/Dashboard/UserDetailScreen';
+import UserDetailScreen from './Screens/Tabs/UserDetailScreen';
 
 import MainTabs from './Screens/MainTabs';
-import PostDetailScreen from './Screens/API/PostDetailScreen';
-import MealDetail from './Screens/API/MealDetail';
+import PostDetailScreen from './API/PostDetailScreen';
+import MealDetail from './API/MealDetail';
+import ProfileScreen from './Screens/profile/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -80,6 +81,11 @@ const App = () => {
            <Stack.Screen
             name="MealDetail"
              component={MealDetail}
+             options={{ headerShown: true }}
+              />
+               <Stack.Screen
+            name="Profile"
+             component={ProfileScreen}
              options={{ headerShown: true }}
               />
       </Stack.Navigator>

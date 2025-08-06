@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from 'react';
 import {
     View,
@@ -9,7 +11,10 @@ import {
     Image,
 } from 'react-native';
 
+const PAGE_SIZE = 10;
+
 const MealsScreen = ({ navigation }) => {
+    const [allMeals, setAllMeals] = useState([]);
     const [meals, setMeals] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -25,12 +30,23 @@ const MealsScreen = ({ navigation }) => {
                 const canadianJson = await canadianRes.json();
                 const seafoodJson = await seafoodRes.json();
 
-                const sections = [
+                const fullData = [
                     { title: 'Canadian Meals', data: canadianJson.meals || [] },
                     { title: 'Seafood Meals', data: seafoodJson.meals || [] },
                 ];
 
-                setMeals(sections);
+                setAllMeals(fullData);
+
+                setMeals([
+                    {
+                        title: 'Canadian Meals',
+                        data: (canadianJson.meals || []).slice(0, PAGE_SIZE),
+                    },
+                    {
+                        title: 'Seafood Meals',
+                        data: (seafoodJson.meals || []).slice(0, PAGE_SIZE),
+                    },
+                ]);
             } catch (error) {
                 console.error('API fetch error:', error);
             } finally {
@@ -40,6 +56,20 @@ const MealsScreen = ({ navigation }) => {
 
         fetchData();
     }, []);
+
+    const loadMoreData = () => {
+        const newMeals = allMeals.map((section, index) => {
+            const currentLength = meals[index]?.data?.length || 0;
+            const moreData = section.data.slice(currentLength, currentLength + PAGE_SIZE);
+
+            return {
+                title: section.title,
+                data: [...(meals[index]?.data || []), ...moreData],
+            };
+        });
+
+        setMeals(newMeals);
+    };
 
     const toggleSelect = (itemId) => {
         setSelectedItems((prevSelected) =>
@@ -82,6 +112,9 @@ const MealsScreen = ({ navigation }) => {
             renderSectionHeader={({ section }) => (
                 <Text style={styles.sectionHeader}>{section.title}</Text>
             )}
+            onEndReached={loadMoreData}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={<ActivityIndicator size="small" color="#888" />}
         />
     );
 };

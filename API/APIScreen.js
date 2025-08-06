@@ -1,5 +1,4 @@
 
-
 import React, { useEffect, useState } from 'react';
 import {
     View,
@@ -13,27 +12,50 @@ import {
 
 const APIScreen = ({ navigation }) => {
     const [data, setData] = useState([]);
+    const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [isLoadingMore, setIsLoadingMore] = useState();
     const [error, setError] = useState(null);
+    const [hasMore, setHasMore] = useState(true);
 
     useEffect(() => {
-        fetchData();
+        fetchData(page);
     }, []);
 
-    const fetchData = async () => {
+    const fetchData = async (pageNum) => {
+        const pageSize = 10; 
         try {
-            const response = await fetch('https://jsonplaceholder.org/posts');
+            if (pageNum === 1) setLoading(true);
+            else setIsLoadingMore(true);
+
+            const response = await fetch(`https://jsonplaceholder.org/posts?_page=${pageNum}&_limit=${pageSize}`);
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
+
             const json = await response.json();
-            setData(json);
+
+            if (json.length > 0) {
+                setData((prevData) => [...prevData, ...json]);
+                setPage(pageNum + 1);
+                setHasMore(true);
+            } else {
+                setHasMore(false);
+            }
+
             setError(null);
         } catch (err) {
-            //console.error('Error fetching data:', err);
-            setError(' Data not found or wrong URL');
+            setError('Data not found or wrong URL');
         } finally {
             setLoading(false);
+            setIsLoadingMore(false);
+        }
+    };
+
+    const loadMoreData = () => {
+        if (!isLoadingMore && hasMore) {
+            fetchData(page);
         }
     };
 
@@ -57,7 +79,6 @@ const APIScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-
             {loading ? (
                 <ActivityIndicator size="large" color="gray" />
             ) : error ? (
@@ -65,10 +86,17 @@ const APIScreen = ({ navigation }) => {
             ) : (
                 <FlatList
                     data={data}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item, index) => `${item.idMeal}-${index}`}
                     renderItem={renderItem}
                     contentContainerStyle={{ paddingBottom: 20 }}
                     showsVerticalScrollIndicator={false}
+                    onEndReached={loadMoreData}
+                    onEndReachedThreshold={0.5}
+                    ListFooterComponent={
+                        isLoadingMore ? (
+                            <ActivityIndicator size="small" color="gray" />
+                        ) : null
+                    }
                 />
             )}
         </View>
@@ -76,6 +104,7 @@ const APIScreen = ({ navigation }) => {
 };
 
 export default APIScreen;
+
 
 const styles = StyleSheet.create({
     container: {
