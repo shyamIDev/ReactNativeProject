@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
     View,
     Text,
@@ -9,8 +8,10 @@ import {
     Image,
     TouchableOpacity,
 } from 'react-native';
+import { ThemeContext } from '../Screens/ThemeProvider';
 
 const APIScreen = ({ navigation }) => {
+    const { theme } = useContext(ThemeContext);
     const [data, setData] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
@@ -23,12 +24,14 @@ const APIScreen = ({ navigation }) => {
     }, []);
 
     const fetchData = async (pageNum) => {
-        const pageSize = 10; 
+        const pageSize = 10;
         try {
             if (pageNum === 1) setLoading(true);
             else setIsLoadingMore(true);
 
-            const response = await fetch(`https://jsonplaceholder.org/posts?_page=${pageNum}&_limit=${pageSize}`);
+            const response = await fetch(
+                `https://jsonplaceholder.org/posts?_page=${pageNum}&_limit=${pageSize}`
+            );
 
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -61,7 +64,7 @@ const APIScreen = ({ navigation }) => {
 
     const renderItem = ({ item }) => (
         <TouchableOpacity
-            style={styles.card}
+            style={[styles.card, { backgroundColor: theme.cardColor }]}
             onPress={() => {
                 navigation.navigate('PostDetail', {
                     title: item.title,
@@ -73,20 +76,20 @@ const APIScreen = ({ navigation }) => {
             }}
         >
             <Image source={{ uri: item.image }} style={styles.image} />
-            <Text style={styles.title}>{item.title}</Text>
+            <Text style={[styles.title, { color: theme.textColor }]}>{item.title}</Text>
         </TouchableOpacity>
     );
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.backgroundColor }]}>
             {loading ? (
-                <ActivityIndicator size="large" color="gray" />
+                <ActivityIndicator size="large" color={theme.accentColor || 'gray'} />
             ) : error ? (
-                <Text style={styles.errorText}>{error}</Text>
+                <Text style={[styles.errorText, { color: 'red' }]}>{error}</Text>
             ) : (
                 <FlatList
                     data={data}
-                    keyExtractor={(item, index) => `${item.idMeal}-${index}`}
+                    keyExtractor={(item, index) => `${item.id || index}`}
                     renderItem={renderItem}
                     contentContainerStyle={{ paddingBottom: 20 }}
                     showsVerticalScrollIndicator={false}
@@ -94,7 +97,7 @@ const APIScreen = ({ navigation }) => {
                     onEndReachedThreshold={0.5}
                     ListFooterComponent={
                         isLoadingMore ? (
-                            <ActivityIndicator size="small" color="gray" />
+                            <ActivityIndicator size="small" color={theme.accentColor || 'gray'} />
                         ) : null
                     }
                 />
@@ -105,16 +108,12 @@ const APIScreen = ({ navigation }) => {
 
 export default APIScreen;
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#fff',
     },
-
     card: {
-        backgroundColor: '#f4f4f4',
         borderRadius: 12,
         padding: 16,
         marginBottom: 20,
@@ -130,20 +129,16 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 8,
-        color: '#333',
     },
     content: {
         fontSize: 14,
-        color: '#555',
         marginBottom: 10,
     },
     meta: {
         fontSize: 12,
-        color: '#777',
         marginTop: 2,
     },
     errorText: {
-        color: 'red',
         fontSize: 16,
         textAlign: 'center',
         marginTop: 20,

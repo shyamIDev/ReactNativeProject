@@ -18,11 +18,13 @@ import MainTabs from './Screens/MainTabs';
 import PostDetailScreen from './API/PostDetailScreen';
 import MealDetail from './API/MealDetail';
 import ProfileScreen from './Screens/profile/ProfileScreen';
+import { ThemeProvider } from './Screens/ThemeProvider';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   return (
+    <ThemeProvider>
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="SplashScreen"
@@ -90,6 +92,7 @@ const App = () => {
               />
       </Stack.Navigator>
     </NavigationContainer>
+    </ThemeProvider>
   );
 };
 

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -11,8 +11,10 @@ import {
   Alert
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ThemeContext } from '../ThemeProvider';
 
-const UserDetailScreen = ({ route, navigation }) => {
+const UserDetailScreen = ({ route }) => {
+  const { theme, isDarkMode } = useContext(ThemeContext);
   const { user } = route.params;
   const [editMode, setEditMode] = useState(false);
   const [editedUser, setEditedUser] = useState({ ...user });
@@ -34,31 +36,52 @@ const UserDetailScreen = ({ route, navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.backgroundColor }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>User Details</Text>
-
-        <View style={styles.card}>
+        <View style={[
+          styles.card,
+          isDarkMode
+            ? { backgroundColor: '#1e1e1e', borderColor: '#333' }
+            : { backgroundColor: '#fff', borderColor: '#e0e0e0' }
+        ]}>
           {Object.entries(editedUser).map(([key, value]) => (
-            <View key={key} style={styles.detailRow}>
-              <Text style={styles.label}>{formatKey(key)}:</Text>
+            <View
+              key={key}
+              style={[
+                styles.detailRow,
+                { borderBottomColor: isDarkMode ? '#333' : '#eee' }
+              ]}
+            >
+              <Text style={[styles.label, { color: theme.textColor }]}>
+                {formatKey(key)}:
+              </Text>
               {editMode ? (
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      color: theme.textColor,
+                      borderColor: isDarkMode ? '#555' : '#ccc'
+                    }
+                  ]}
                   value={value}
                   onChangeText={text =>
                     setEditedUser(prev => ({ ...prev, [key]: text }))
                   }
+                  placeholderTextColor={isDarkMode ? '#888' : '#aaa'}
                 />
               ) : (
-                <Text style={styles.value}>{value}</Text>
+                <Text style={[styles.value, { color: theme.textColor }]}>{value}</Text>
               )}
             </View>
           ))}
         </View>
 
         <TouchableOpacity
-          style={styles.editButton}
+          style={[
+            styles.editButton,
+            { backgroundColor: isDarkMode ? theme.buttonColor || '#444' : '#000080' }
+          ]}
           onPress={editMode ? handleUpdate : () => setEditMode(true)}
         >
           <Text style={styles.editButtonText}>
@@ -77,19 +100,18 @@ const formatKey = key => {
 export default UserDetailScreen;
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F6F8FA' },
+  safeArea: { flex: 1 },
   scrollContent: { padding: 20 },
   title: {
     fontSize: 26,
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: 30,
-    color: '#0A0A0A',
   },
   card: {
-    backgroundColor: 'white',
     borderRadius: 16,
     padding: 20,
+    borderWidth: 0.5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -101,29 +123,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
     paddingBottom: 8,
   },
   label: {
     width: 120,
     fontWeight: '600',
-    color: '#333',
   },
   value: {
     flex: 1,
-    color: '#555',
     fontSize: 15,
   },
   input: {
     flex: 1,
     borderBottomWidth: 1,
-    borderColor: '#ccc',
     fontSize: 15,
     paddingVertical: 4,
   },
   editButton: {
     marginTop: 20,
-    backgroundColor: '#000080',
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',

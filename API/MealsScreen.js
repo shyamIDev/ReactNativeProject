@@ -1,6 +1,4 @@
-
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
     View,
     Text,
@@ -10,6 +8,7 @@ import {
     TouchableOpacity,
     Image,
 } from 'react-native';
+import { ThemeContext } from '../Screens/ThemeProvider';
 
 const PAGE_SIZE = 10;
 
@@ -18,6 +17,8 @@ const MealsScreen = ({ navigation }) => {
     const [meals, setMeals] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const { theme } = useContext(ThemeContext);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -88,34 +89,44 @@ const MealsScreen = ({ navigation }) => {
                     toggleSelect(item.idMeal);
                     navigation.navigate('MealDetail', { item });
                 }}
-                style={[styles.itemContainer, isSelected && styles.itemSelected]}
+                style={[
+                    styles.itemContainer,
+                    { backgroundColor: theme.backgroundColor, borderColor: '#ccc' },
+                    isSelected && { backgroundColor: '#cce5ff', borderColor: '#3399ff' }
+                ]}
             >
                 <Image source={{ uri: item.strMealThumb }} style={styles.image} />
-                <Text style={styles.itemText}>{item.strMeal}</Text>
+                <Text style={[styles.itemText, { color: theme.textColor }]}>
+                    {item.strMeal}
+                </Text>
             </TouchableOpacity>
         );
     };
 
     if (loading) {
         return (
-            <View style={styles.centered}>
-                <ActivityIndicator size="large" color="#000080" />
+            <View style={[styles.centered, { backgroundColor: theme.backgroundColor }]}>
+                <ActivityIndicator size="large" color={theme.textColor} />
             </View>
         );
     }
 
     return (
-        <SectionList
-            sections={meals}
-            keyExtractor={(item) => item.idMeal}
-            renderItem={renderItem}
-            renderSectionHeader={({ section }) => (
-                <Text style={styles.sectionHeader}>{section.title}</Text>
-            )}
-            onEndReached={loadMoreData}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={<ActivityIndicator size="small" color="#888" />}
-        />
+        <View style={{ flex: 1, backgroundColor: theme.backgroundColor }}>
+            <SectionList
+                sections={meals}
+                keyExtractor={(item) => item.idMeal}
+                renderItem={renderItem}
+                renderSectionHeader={({ section }) => (
+                    <Text style={[styles.sectionHeader, { backgroundColor: theme.backgroundColor, color: theme.textColor }]}>
+                        {section.title}
+                    </Text>
+                )}
+                onEndReached={loadMoreData}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={<ActivityIndicator size="small" color={theme.textColor} />}
+            />
+        </View>
     );
 };
 
@@ -130,7 +141,6 @@ const styles = StyleSheet.create({
     sectionHeader: {
         fontSize: 20,
         fontWeight: 'bold',
-        backgroundColor: '#f4f4f4',
         padding: 10,
     },
     itemContainer: {
@@ -140,13 +150,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#ccc',
         marginBottom: 5,
-        backgroundColor: '#fff',
-    },
-    itemSelected: {
-        backgroundColor: '#cce5ff',
-        borderColor: '#3399ff',
     },
     itemText: {
         marginLeft: 10,

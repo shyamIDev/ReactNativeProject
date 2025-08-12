@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { ThemeContext } from '../Screens/ThemeProvider';
 
 const MealDetail = ({ route }) => {
     const { item } = route.params;
+    const { theme } = useContext(ThemeContext);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.backgroundColor }]}>
             <Image source={{ uri: item.strMealThumb }} style={styles.image} />
-            <Text style={styles.title}>{item.strMeal}</Text>
-            <Text style={styles.text}>Meal ID: {item.idMeal}</Text>
+            <Text style={[styles.title, { color: theme.textColor }]}>{item.strMeal}</Text>
+            <Text style={[styles.text, { color: theme.subTextColor || '#666' }]}>
+                Meal ID: {item.idMeal}
+            </Text>
         </View>
     );
 };
@@ -20,7 +24,6 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         alignItems: 'center',
-        backgroundColor: '#fff',
     },
     image: {
         width: 200,
@@ -35,6 +38,5 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 16,
-        color: '#666',
     },
 });

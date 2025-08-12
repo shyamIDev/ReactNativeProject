@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
     View,
     Text,
@@ -6,29 +6,32 @@ import {
     Image,
     ScrollView,
     SafeAreaView,
-    StatusBar,
 } from 'react-native';
+import { ThemeContext } from '../Screens/ThemeProvider';
 
 const PostDetailScreen = ({ route }) => {
+    const { theme } = useContext(ThemeContext);
     const { title, slug, category, publishedAt, image } = route.params;
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-         
-            <ScrollView contentContainerStyle={styles.container}>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.backgroundColor }]}>
+            <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.backgroundColor }]}>
                 <Image source={{ uri: image }} style={styles.image} />
-                <Text style={styles.title}>{title}</Text>
+                <Text style={[styles.title, { color: theme.textColor }]}>{title}</Text>
+
                 <View style={styles.metaBox}>
-                    <Text style={styles.metaLabel}>Slug:</Text>
-                    <Text style={styles.metaValue}>{slug}</Text>
+                    <Text style={[styles.metaLabel, { color: theme.textColor }]}>Slug:</Text>
+                    <Text style={[styles.metaValue, { color: theme.secondaryTextColor }]}>{slug}</Text>
                 </View>
+
                 <View style={styles.metaBox}>
-                    <Text style={styles.metaLabel}>Category:</Text>
-                    <Text style={styles.metaValue}>{category}</Text>
+                    <Text style={[styles.metaLabel, { color: theme.textColor }]}>Category:</Text>
+                    <Text style={[styles.metaValue, { color: theme.secondaryTextColor }]}>{category}</Text>
                 </View>
+
                 <View style={styles.metaBox}>
-                    <Text style={styles.metaLabel}>Published:</Text>
-                    <Text style={styles.metaValue}>{publishedAt}</Text>
+                    <Text style={[styles.metaLabel, { color: theme.textColor }]}>Published:</Text>
+                    <Text style={[styles.metaValue, { color: theme.secondaryTextColor }]}>{publishedAt}</Text>
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -40,11 +43,9 @@ export default PostDetailScreen;
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#f9f9f9',
     },
     container: {
         padding: 16,
-        backgroundColor: '#f9f9f9',
     },
     image: {
         width: '100%',
@@ -55,7 +56,6 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: '700',
-        color: '#222',
         marginBottom: 20,
     },
     metaBox: {
@@ -65,12 +65,10 @@ const styles = StyleSheet.create({
     metaLabel: {
         fontWeight: '600',
         fontSize: 14,
-        color: '#444',
         width: 90,
     },
     metaValue: {
         fontSize: 14,
-        color: '#666',
         flexShrink: 1,
     },
 });

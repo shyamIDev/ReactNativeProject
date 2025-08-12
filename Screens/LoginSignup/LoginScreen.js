@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
     SafeAreaView,
     View,
@@ -12,10 +11,13 @@ import {
     ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ThemeContext } from '../ThemeProvider';
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const { theme, isDarkMode } = useContext(ThemeContext);
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -49,33 +51,49 @@ const LoginScreen = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.backgroundColor }]}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.container}>
                     <View style={styles.header}>
-                        <Text style={styles.title}>Login</Text>
+                        <Text style={[styles.title, { color: theme.textColor }]}>Login</Text>
                     </View>
-                    <Text style={styles.subtitle}>Login to your account</Text>
+                    <Text style={[styles.subtitle, { color: theme.textColor }]}>
+                        Login to your account
+                    </Text>
                     <View style={styles.formContainer}>
                         <TextInput
                             placeholder="Email"
-                            style={[styles.input, styles.shadow]}
-                            placeholderTextColor="grey"
+                            style={[
+                                styles.input,
+                                styles.shadow,
+                                {
+                                    backgroundColor: isDarkMode ? '#1e1e1e' : '#f9f9f9',
+                                    color: theme.textColor,
+                                },
+                            ]}
+                            placeholderTextColor={isDarkMode ? '#aaa' : 'grey'}
                             autoCapitalize="none"
                             value={email}
                             onChangeText={setEmail}
                         />
                         <TextInput
                             placeholder="Password"
-                            style={[styles.input, styles.shadow]}
-                            placeholderTextColor="grey"
+                            style={[
+                                styles.input,
+                                styles.shadow,
+                                {
+                                    backgroundColor: isDarkMode ? '#1e1e1e' : '#f9f9f9',
+                                    color: theme.textColor,
+                                },
+                            ]}
+                            placeholderTextColor={isDarkMode ? '#aaa' : 'grey'}
                             secureTextEntry
                             value={password}
                             onChangeText={setPassword}
                         />
 
                         <TouchableOpacity
-                            style={[styles.button, styles.shadow]}
+                            style={[styles.button, styles.shadow, { backgroundColor: '#000080' }]}
                             onPress={handleLogin}
                         >
                             <Text style={styles.buttonText}>Log in</Text>
@@ -83,28 +101,54 @@ const LoginScreen = ({ navigation }) => {
 
                         <View style={styles.forgotPasswordContainer}>
                             <TouchableOpacity onPress={() => navigation.navigate('OTPVerification')}>
-                                <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+                                <Text
+                                    style={[
+                                        styles.forgotPasswordText,
+                                        { color: isDarkMode ? '#87CEFA' : '#000080' },
+                                    ]}
+                                >
+                                    Forgot password?
+                                </Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                     <View style={styles.socialSection}>
-                        <Text style={styles.orText}>- or sign in with -</Text>
+                        <Text style={[styles.orText, { color: theme.textColor }]}>
+                            - or sign in with -
+                        </Text>
                         <View style={styles.socialContainer}>
                             {[
                                 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png',
                                 'https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png',
                                 'https://cdn.jim-nielsen.com/ios/512/twitter-2013-10-08.png?rf=1024',
                             ].map((uri, index) => (
-                                <View key={index} style={[styles.iconWrapper, styles.shadow]}>
+                                <View
+                                    key={index}
+                                    style={[
+                                        styles.iconWrapper,
+                                        styles.shadow,
+                                        { backgroundColor: isDarkMode ? '#1e1e1e' : 'white' },
+                                    ]}
+                                >
                                     <Image style={styles.socialIcon} source={{ uri }} />
                                 </View>
                             ))}
                         </View>
                     </View>
                     <View style={styles.footer}>
-                        <Text style={styles.footerText}>Don't have an account?</Text>
+                        <Text style={[styles.footerText, { color: theme.textColor }]}>
+                            Don't have an account?
+                        </Text>
                         <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-                            <Text style={styles.footerLink}> Sign up</Text>
+                            <Text
+                                style={[
+                                    styles.footerLink,
+                                    { color: isDarkMode ? '#87CEFA' : '#000080' },
+                                ]}
+                            >
+                                {' '}
+                                Sign up
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -116,7 +160,6 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: 'white',
     },
     scrollContent: {
         flexGrow: 1,
@@ -134,11 +177,9 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#000080',
     },
     subtitle: {
         fontSize: 16,
-        color: 'black',
         marginBottom: 10,
     },
     formContainer: {
@@ -151,11 +192,9 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         paddingHorizontal: 15,
         fontSize: 16,
-        backgroundColor: '#f9f9f9',
         marginBottom: 20,
     },
     button: {
-        backgroundColor: '#000080',
         paddingVertical: 14,
         borderRadius: 8,
         alignItems: 'center',
@@ -172,7 +211,6 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 4,
     },
-
     socialSection: {
         alignItems: 'center',
         marginTop: 40,
@@ -180,13 +218,11 @@ const styles = StyleSheet.create({
     orText: {
         fontSize: 14,
         marginBottom: 15,
-        color: 'black',
     },
     iconWrapper: {
         width: 60,
         height: 60,
         borderRadius: 10,
-        backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -206,7 +242,6 @@ const styles = StyleSheet.create({
     },
     forgotPasswordText: {
         fontSize: 14,
-        color: '#000080',
     },
     footer: {
         flexDirection: 'row',
@@ -215,11 +250,9 @@ const styles = StyleSheet.create({
         marginTop: 40,
     },
     footerText: {
-        color: 'black',
         fontSize: 14,
     },
     footerLink: {
-        color: '#000080',
         fontSize: 14,
         fontWeight: 'bold',
         marginLeft: 5,

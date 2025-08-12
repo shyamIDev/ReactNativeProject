@@ -1,20 +1,32 @@
-
-
-import React from 'react';
+import React, { useContext } from 'react';
 import { Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './Tabs/HomeScreen';
 import APIScreen from '../API/APIScreen';
 import MealsScreen from '../API/MealsScreen';
 import SettingsScreen from './Tabs/SettingsScreen';
+import { ThemeContext } from './ThemeProvider';
 
 const Tab = createBottomTabNavigator();
 
 const MainTabs = () => {
+    const { theme, isDarkMode } = useContext(ThemeContext);
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
-                tabBarIcon: ({ focused, color, size }) => {
+                headerShown: true,
+                headerTitle: route.name,
+                headerStyle: {
+                    backgroundColor: isDarkMode ? '#121212' : '#f8f8f8',
+                },
+                headerTitleStyle: {
+                    color: isDarkMode ? '#ffffff' : '#000000',
+                    fontWeight: 'bold',
+                    fontSize: 18,
+                },
+                headerTintColor: isDarkMode ? '#ffffff' : '#000000',
+                tabBarIcon: ({ focused, size }) => {
                     let iconSource;
 
                     if (route.name === 'Dashboard') {
@@ -33,21 +45,43 @@ const MainTabs = () => {
                             style={{
                                 width: size,
                                 height: size,
-                                tintColor: focused ? '#000080' : 'gray',
+                                tintColor: focused
+                                    ? (isDarkMode ? '#ffffff' : '#000080')
+                                    : (isDarkMode ? '#aaa' : 'gray'),
                             }}
                             resizeMode="contain"
                         />
                     );
                 },
-                tabBarActiveTintColor: '#000080',
-                tabBarInactiveTintColor: 'gray',
+                tabBarActiveTintColor: isDarkMode ? '#ffffff' : '#000080',
+                tabBarInactiveTintColor: isDarkMode ? '#aaa' : 'gray',
+                tabBarStyle: {
+                    backgroundColor: isDarkMode ? '#121212' : '#fff',
+                    borderTopColor: isDarkMode ? '#333' : '#ddd',
+                },
             })}
+
         >
-            <Tab.Screen name="Dashboard" component={HomeScreen} />
-            <Tab.Screen name="API" component={APIScreen} />
-            <Tab.Screen name="SectionAPI" component={MealsScreen} />
-            <Tab.Screen name="Settings" component={SettingsScreen} />
-            
+            <Tab.Screen
+                name="Dashboard"
+                component={HomeScreen}
+                options={{ title: 'Dashboard' }}
+            />
+            <Tab.Screen
+                name="API"
+                component={APIScreen}
+                options={{ title: 'API Data' }}
+            />
+            <Tab.Screen
+                name="SectionAPI"
+                component={MealsScreen}
+                options={{ title: 'Meals API' }}
+            />
+            <Tab.Screen
+                name="Settings"
+                component={SettingsScreen}
+                options={{ title: 'Settings' }}
+            />
         </Tab.Navigator>
     );
 };

@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+
+
+import React, { useEffect, useState, useContext } from 'react';
 import {
     SafeAreaView,
     View,
@@ -9,10 +11,12 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { ThemeContext } from '../ThemeProvider';
 
 const HomeScreen = ({ navigation }) => {
     const [users, setUsers] = useState([]);
     const isFocused = useIsFocused();
+    const { theme, isDarkMode } = useContext(ThemeContext);
 
     useEffect(() => {
         const loadUsers = async () => {
@@ -30,10 +34,6 @@ const HomeScreen = ({ navigation }) => {
         }
     }, [isFocused]);
 
-    const handleLogout = () => {
-        navigation.replace('Login');
-    };
-
     const handleDelete = async (index) => {
         try {
             const updatedUsers = [...users];
@@ -46,12 +46,33 @@ const HomeScreen = ({ navigation }) => {
     };
 
     const renderItem = ({ item, index }) => (
-        <View style={styles.userCard}>
+        <View
+            style={[
+                styles.userCard,
+                isDarkMode
+                    ? { backgroundColor: '#1e1e1e', borderColor: '#333' } // Dark mode card
+                    : { backgroundColor: '#fff', borderColor: '#e0e0e0' }  // Light mode card stays same white with shadow
+            ]}
+        >
             <TouchableOpacity
                 onPress={() => navigation.navigate('UserDetail', { user: item, index })}
             >
-                <Text style={styles.nameText}>{item.name}</Text>
-                <Text style={styles.emailText}>{item.email}</Text>
+                <Text
+                    style={[
+                        styles.nameText,
+                        { color: theme.textColor }
+                    ]}
+                >
+                    {item.name}
+                </Text>
+                <Text
+                    style={[
+                        styles.emailText,
+                        { color: isDarkMode ? '#ccc' : '#666' }
+                    ]}
+                >
+                    {item.email}
+                </Text>
             </TouchableOpacity>
             <TouchableOpacity
                 style={styles.deleteButton}
@@ -63,11 +84,12 @@ const HomeScreen = ({ navigation }) => {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
-
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.backgroundColor }]}>
             <View style={styles.content}>
                 {users.length === 0 ? (
-                    <Text style={styles.emptyText}>No users found.</Text>
+                    <Text style={[styles.emptyText, { color: theme.secondaryTextColor }]}>
+                        No users found.
+                    </Text>
                 ) : (
                     <FlatList
                         data={users}
@@ -86,46 +108,12 @@ export default HomeScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ffffff',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingTop: 16,
-    },
-    logoutButton: {
-        backgroundColor: '#f2f2f2',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
-    },
-    logoutText: {
-        color: '#333',
-        fontWeight: '600',
-        fontSize: 14,
     },
     content: {
         flex: 1,
         paddingHorizontal: 20,
     },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 20,
-        color: '#333',
-    },
     userCard: {
-        backgroundColor: '#ffffff',
         padding: 16,
         borderRadius: 12,
         marginBottom: 12,
@@ -135,7 +123,6 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 3,
         borderWidth: 0.5,
-        borderColor: '#e0e0e0',
     },
     deleteButton: {
         marginTop: 10,
@@ -152,17 +139,14 @@ const styles = StyleSheet.create({
     nameText: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#333333',
     },
     emailText: {
         fontSize: 15,
-        color: '#666666',
         marginTop: 4,
     },
     emptyText: {
         textAlign: 'center',
         fontSize: 16,
-        color: '#999',
         marginTop: 40,
     },
 });

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useContext } from 'react';
 import {
     View,
     Text,
@@ -8,8 +9,10 @@ import {
     Alert,
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { ThemeContext } from '../ThemeProvider';
 
 const ProfileScreen = () => {
+    const { theme, isDarkMode } = useContext(ThemeContext);
     const [avatarUri, setAvatarUri] = useState('https://randomuser.me/api/portraits/men/1.jpg');
 
     const openGallery = () => {
@@ -24,7 +27,6 @@ const ProfileScreen = () => {
             if (response.didCancel) {
                 console.log('User cancelled image picker');
             } else if (response.errorCode) {
-                
                 Alert.alert('Error', response.errorMessage || 'Something went wrong');
             } else {
                 const uri = response.assets?.[0]?.uri;
@@ -36,30 +38,44 @@ const ProfileScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.profileSection}>
+        <View style={[
+            styles.container,
+            { backgroundColor: isDarkMode ? '#000000' : '#F5F5F5' }
+        ]}>
+           
+            <View
+                style={[
+                    styles.profileSection,
+                    { backgroundColor: theme.cardBackground || (isDarkMode ? '#1E1E1E' : '#FFFFFF') }
+                ]}
+            >
                 <TouchableOpacity onPress={openGallery}>
                     <Image
                         source={{ uri: avatarUri }}
-                        style={styles.avatar}
+                        style={[
+                            styles.avatar,
+                            { borderColor: isDarkMode ? '#555' : '#ddd' }
+                        ]}
                     />
                 </TouchableOpacity>
-                <Text style={styles.name}>user</Text>
-                <Text style={styles.email}>user@gmail.com</Text>
+                <Text style={[styles.name, { color: theme.textColor }]}>user</Text>
+                <Text style={[styles.email, { color: theme.textColor }]}>user@gmail.com</Text>
             </View>
 
-            <View style={styles.sectionContainer}>
+            <View
+                style={[
+                    styles.sectionContainer,
+                    { backgroundColor: theme.cardBackground || (isDarkMode ? '#1E1E1E' : '#FFFFFF') }
+                ]}
+            >
                 <TouchableOpacity style={styles.listItem}>
-                    {/* <View style={styles.iconWrapper}></View> */}
-                    <Text style={styles.itemText}>Settings</Text>
+                    <Text style={[styles.itemText, { color: theme.textColor }]}>Settings</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.listItem}>
-                    {/* <View style={styles.iconWrapper}></View> */}
-                    <Text style={styles.itemText}>Older History</Text>
+                    <Text style={[styles.itemText, { color: theme.textColor }]}>Older History</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.listItem}>
-                    {/* <View style={styles.iconWrapper}></View> */}
-                    <Text style={styles.itemText}>Notification</Text>
+                <TouchableOpacity style={[styles.listItem, { borderBottomWidth: 0 }]}>
+                    <Text style={[styles.itemText, { color: theme.textColor }]}>Notification</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -71,13 +87,11 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7F8FA',
         paddingTop: 20,
         paddingHorizontal: 20,
     },
     profileSection: {
         alignItems: 'center',
-        backgroundColor: '#fff',
         paddingVertical: 20,
         borderRadius: 12,
         marginBottom: 20,
@@ -88,7 +102,6 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         marginBottom: 10,
         borderWidth: 2,
-        borderColor: '#ccc',
     },
     name: {
         fontSize: 18,
@@ -96,10 +109,8 @@ const styles = StyleSheet.create({
     },
     email: {
         fontSize: 14,
-        color: '#888',
     },
     sectionContainer: {
-        backgroundColor: '#fff',
         borderRadius: 12,
         paddingVertical: 8,
     },
@@ -109,16 +120,7 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         paddingHorizontal: 16,
         borderBottomWidth: 0.5,
-        borderBottomColor: '#eee',
-    },
-    iconWrapper: {
-        width: 32,
-        height: 32,
-        borderRadius: 8,
-        backgroundColor: '#E7F5EC',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 16,
+        borderBottomColor: '#ccc',
     },
     itemText: {
         flex: 1,
